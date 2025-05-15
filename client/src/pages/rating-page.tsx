@@ -30,8 +30,21 @@ export default function RatingPage() {
     }
 
     try {
-      // Here you would typically send the rating to your backend
-      // await fetch('/api/ratings', { method: 'POST', body: JSON.stringify({ tableId, rating, feedback }) });
+        const response = await fetch('/api/ratings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            tableId: parseInt(tableId), 
+            rating, 
+            feedback 
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit rating');
+        }
       
       setSubmitted(true);
       toast({

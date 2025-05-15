@@ -46,6 +46,12 @@ const AdminSidebar = () => {
             Menu
           </Button>
         </Link>
+        <Link href="/admin/ratings">
+          <Button variant="ghost" className="w-full justify-start text-white hover:bg-secondary-light">
+            <Star className="mr-2 h-5 w-5" />
+            Ratings
+          </Button>
+        </Link>
       </div>
     </div>
   );

@@ -9,10 +9,44 @@ import {
   insertTableSchema,
   insertReservationSchema
 } from "@shared/schema";
-import { format, addDays, isBefore, isAfter, parseISO } from "date-fns";
+import { format, addDays, isBefore, isAfter, parseISO, startOfWeek, endOfWeek } from "date-fns";
 import * as QRCode from "qrcode";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Ratings Routes
+  app.get("/api/ratings", isAdmin, async (req, res) => {
+    try {
+      const start = req.query.start ? new Date(req.query.start as string) : startOfWeek(new Date());
+      const end = req.query.end ? new Date(req.query.end as string) : endOfWeek(new Date());
+
+      const ratings = await db.select().from(ratings)
+        .where(
+          and(
+            gte(ratings.createdAt, start),
+            lte(ratings.createdAt, end)
+          )
+        )
+        .orderBy(desc(ratings.createdAt));
+
+      res.json(ratings);
+    } catch (error) {
+      console.error('Error fetching ratings:', error);
+      res.status(500).send('Error fetching ratings');
+    }
+  });
+
+  app.post("/api/ratings", async (req, res) => {
+    try {
+      const { tableId, rating, feedback } = req.body;
+      const newRating = await db.insert(ratings)
+        .values({ tableId, rating, feedback })
+        .returning();
+      res.status(201).json(newRating[0]);
+    } catch (error) {
+      console.error('Error creating rating:', error);
+      res.status(500).send('Error creating rating');
+    }
+  });
   // Setup authentication routes
   setupAuth(app);
 

@@ -1,6 +1,16 @@
 import { pgTable, text, serial, integer, boolean, date, time, decimal, primaryKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
+import { integer, pgTable, serial, text, boolean, timestamp } from "drizzle-orm/pg-core";
+
+export const ratings = pgTable("ratings", {
+  id: serial("id").primaryKey(),
+  tableId: integer("table_id").notNull(),
+  rating: integer("rating").notNull(),
+  feedback: text("feedback"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
 
 // Users
 export const users = pgTable("users", {
