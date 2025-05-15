@@ -632,7 +632,7 @@ export default function AdminMenu() {
                         <TableCell className="max-w-[300px]">
                           <div className="line-clamp-2 text-sm">{item.description}</div>
                         </TableCell>
-                        <TableCell>${item.price.toFixed(2)}</TableCell>
+                        <TableCell>${parseFloat(item.price).toFixed(2)}</TableCell>
                         <TableCell>
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                             item.isAvailable 
