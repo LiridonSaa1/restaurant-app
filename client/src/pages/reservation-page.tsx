@@ -32,10 +32,14 @@ const reservationSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   phone: z.string().min(10, "Please enter your phone number"),
   specialRequests: z.string().optional(),
+  tableId: z.number().optional(),
 });
 
 export default function ReservationPage() {
   const [_, navigate] = useLocation();
+  const search = useSearch();
+  const params = new URLSearchParams(search);
+  const preselectedTableId = params.get("table") ? parseInt(params.get("table")!) : undefined;
   const { toast } = useToast();
   const { user } = useAuth();
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
@@ -54,6 +58,7 @@ export default function ReservationPage() {
       email: user?.email || "",
       phone: user?.phone || "",
       specialRequests: "",
+      tableId: preselectedTableId,
     },
   });
   
@@ -77,7 +82,12 @@ export default function ReservationPage() {
   // Reservation mutation
   const reservationMutation = useMutation({
     mutationFn: async (data: z.infer<typeof reservationSchema>) => {
-      const res = await apiRequest("POST", "/api/reservations", data);
+      // Include the tableId if it was selected via QR code
+      const reservationData = {
+        ...data,
+        tableId: data.tableId || undefined
+      };
+      const res = await apiRequest("POST", "/api/reservations", reservationData);
       return await res.json() as Reservation;
     },
     onSuccess: () => {
@@ -280,6 +290,45 @@ export default function ReservationPage() {
                   </FormItem>
                 )}
               />
+              
+              {/* Table Selection - only shown when coming from a QR code */}
+              {preselectedTableId && tables && (
+                <FormField
+                  control={form.control}
+                  name="tableId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Selected Table</FormLabel>
+                      <div className="flex items-center space-x-2">
+                        <FormControl>
+                          <Select
+                            disabled={true}
+                            value={field.value?.toString()}
+                            onValueChange={(value) => field.onChange(parseInt(value))}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Table selected from QR code" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {tables.map(table => (
+                                <SelectItem key={table.id} value={table.id.toString()}>
+                                  {table.name} - {table.location} ({table.capacity} seats)
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <div className="bg-primary/10 p-2 rounded-full">
+                          <QrCode className="h-5 w-5 text-primary" />
+                        </div>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        This table was selected via QR code
+                      </p>
+                    </FormItem>
+                  )}
+                />
+              )}
 
               {/* Contact Information */}
               <div className="space-y-4">

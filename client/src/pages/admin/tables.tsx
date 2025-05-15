@@ -52,6 +52,8 @@ import {
   Trash2,
   Edit,
   Loader2,
+  QrCode,
+  Download,
 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -105,7 +107,9 @@ export default function AdminTables() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState<TableType | null>(null);
+  const [qrCodeData, setQrCodeData] = useState<{ qrCode: string, reservationUrl: string } | null>(null);
 
   // Fetch tables
   const { data: tables, isLoading } = useQuery<TableType[]>({
