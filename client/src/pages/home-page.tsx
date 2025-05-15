@@ -5,7 +5,8 @@ import {
   Utensils, 
   Clock, 
   MapPin,
-  ArrowRight 
+  ArrowRight,
+  X
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -184,7 +185,7 @@ export default function HomePage() {
                       <div>
                         <div className="flex justify-between">
                           <h3 className="font-accent font-medium">{item.name}</h3>
-                          <span className="text-primary font-medium">${item.price.toFixed(2)}</span>
+                          <span className="text-primary font-medium">${parseFloat(item.price).toFixed(2)}</span>
                         </div>
                         <p className="text-sm text-neutral-600 mt-1">{item.description}</p>
                       </div>

@@ -58,6 +58,144 @@ export class DatabaseStorage implements IStorage {
       pool,
       createTableIfMissing: true
     });
+    
+    // Initialize with sample data if tables are empty
+    this.initSampleData();
+  }
+  
+  // Initialize sample data
+  private async initSampleData() {
+    try {
+      // Check if tables already exist
+      const existingTables = await this.getAllTables();
+      if (existingTables.length === 0) {
+        console.log("Initializing sample tables...");
+        // Sample tables
+        const sampleTables: InsertTable[] = [
+          { name: "Table 1", capacity: 2, location: "Main", isActive: true },
+          { name: "Table 2", capacity: 2, location: "Main", isActive: true },
+          { name: "Table 3", capacity: 4, location: "Main", isActive: true },
+          { name: "Table 4", capacity: 4, location: "Main", isActive: true },
+          { name: "Table 5", capacity: 6, location: "Main", isActive: true },
+          { name: "Table 6", capacity: 8, location: "Main", isActive: true },
+          { name: "Patio 1", capacity: 2, location: "Outdoor", isActive: true },
+          { name: "Patio 2", capacity: 4, location: "Outdoor", isActive: true },
+          { name: "Private Room", capacity: 12, location: "Private", isActive: true },
+        ];
+        
+        for (const table of sampleTables) {
+          await this.createTable(table);
+        }
+      }
+      
+      // Check if menu items already exist
+      const existingMenuItems = await this.getAllMenuItems();
+      if (existingMenuItems.length === 0) {
+        console.log("Initializing sample menu items...");
+        await this.initSampleMenuItems();
+      }
+    } catch (error) {
+      console.error("Error initializing sample data:", error);
+    }
+  }
+  
+  private async initSampleMenuItems() {
+    const sampleMenuItems: InsertMenuItem[] = [
+      {
+        name: "Truffle Arancini",
+        description: "Wild mushroom risotto balls with black truffle and parmesan",
+        price: "16",
+        category: "starters",
+        image: "https://images.unsplash.com/photo-1541014741259-de529411b96a?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+        dietary: ["vegetarian"],
+        isAvailable: true
+      },
+      {
+        name: "Seared Scallops",
+        description: "Hand-dived scallops with pea purée and crispy pancetta",
+        price: "19",
+        category: "starters",
+        image: "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+        isAvailable: true
+      },
+      {
+        name: "Heirloom Tomato Salad",
+        description: "Local tomatoes with buffalo mozzarella, basil oil and aged balsamic",
+        price: "14",
+        category: "starters",
+        image: "https://images.unsplash.com/photo-1623428187969-5da2dcea5ebf?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+        dietary: ["vegetarian", "gluten-free"],
+        isAvailable: true,
+        featuredItem: true
+      },
+      {
+        name: "Filet Mignon",
+        description: "8oz grass-fed beef with truffle mashed potatoes and red wine jus",
+        price: "42",
+        category: "mains",
+        image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+        dietary: ["gluten-free"],
+        isAvailable: true,
+        featuredItem: true
+      },
+      {
+        name: "Pan-Seared Salmon",
+        description: "Wild-caught salmon with asparagus, lemon beurre blanc and herb oil",
+        price: "38",
+        category: "mains",
+        image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+        dietary: ["gluten-free"],
+        isAvailable: true
+      },
+      {
+        name: "Truffle Risotto",
+        description: "Carnaroli rice with porcini mushrooms, black truffle and aged parmesan",
+        price: "32",
+        category: "mains",
+        image: "https://images.unsplash.com/photo-1473093226795-af9932fe5856?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+        dietary: ["vegetarian"],
+        isAvailable: true
+      },
+      {
+        name: "Chocolate Fondant",
+        description: "Warm dark chocolate cake with vanilla ice cream and salted caramel",
+        price: "14",
+        category: "desserts",
+        image: "https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+        dietary: ["vegetarian"],
+        isAvailable: true,
+        featuredItem: true
+      },
+      {
+        name: "Crème Brûlée",
+        description: "Classic vanilla bean custard with caramelized sugar crust",
+        price: "12",
+        category: "desserts",
+        image: "https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+        dietary: ["vegetarian", "gluten-free"],
+        isAvailable: true
+      },
+      {
+        name: "Signature Negroni",
+        description: "House-infused gin with Campari, sweet vermouth and orange peel",
+        price: "16",
+        category: "drinks",
+        image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+        isAvailable: true
+      },
+      {
+        name: "Premium Wine Selection",
+        description: "Curated wines by the glass from our extensive cellar collection",
+        price: "14",
+        category: "drinks",
+        image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+        isAvailable: true
+      }
+    ];
+    
+    for (const menuItem of sampleMenuItems) {
+      await this.createMenuItem(menuItem);
+    }
   }
 
   // User methods
