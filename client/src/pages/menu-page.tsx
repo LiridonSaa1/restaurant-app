@@ -14,7 +14,7 @@ export default function MenuPage() {
 
   // Get all unique categories
   const categories = menuItems ? 
-    ["all", ...new Set(menuItems.map(item => item.category.toLowerCase()))] : 
+    ["all", ...Array.from(new Set(menuItems.map(item => item.category.toLowerCase())))] : 
     ["all", "starters", "mains", "desserts", "drinks"];
 
   // Filter items by category
