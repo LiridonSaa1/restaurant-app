@@ -169,6 +169,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Generate rating QR code for a table
+  app.get("/api/tables/:id/rating-qrcode", isAdmin, async (req, res) => {
+    try {
+      const tableId = parseInt(req.params.id);
+      const table = await storage.getTable(tableId);
+      
+      if (!table) {
+        return res.status(404).send("Table not found");
+      }
+      
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const ratingUrl = `${baseUrl}/rating?table=${tableId}`;
+      
+      const qrCode = await QRCode.toDataURL(ratingUrl, {
+        errorCorrectionLevel: 'H',
+        margin: 1,
+        scale: 8
+      });
+      
+      res.json({
+        table,
+        qrCode,
+        ratingUrl
+      });
+    } catch (error) {
+      console.error('Error generating rating QR code:', error);
+      res.status(500).send('Error generating rating QR code');
+    }
+  });
+
   // Generate QR codes for all tables
   app.get("/api/tables/qrcodes/all", isAdmin, async (req, res) => {
     try {

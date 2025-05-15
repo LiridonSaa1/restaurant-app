@@ -54,6 +54,7 @@ import {
   Loader2,
   QrCode,
   Download,
+  Star,
 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -244,7 +245,7 @@ export default function AdminTables() {
       deleteTableMutation.mutate(selectedTable.id);
     }
   };
-  
+
   // Handle QR code generation
   const handleQrCodeClick = async (table: TableType) => {
     try {
@@ -265,7 +266,27 @@ export default function AdminTables() {
       console.error("QR code generation error:", error);
     }
   };
-  
+
+  const handleRatingQrCodeClick = async (table: TableType) => {
+    try {
+      setSelectedTable(table);
+      const res = await apiRequest("GET", `/api/tables/${table.id}/rating-qrcode`);
+      const data = await res.json();
+      setQrCodeData({
+        qrCode: data.qrCode,
+        reservationUrl: data.ratingUrl
+      });
+      setIsQrDialogOpen(true);
+    } catch (error) {
+      toast({
+        title: "Error generating rating QR code",
+        description: "Could not generate rating QR code for this table.",
+        variant: "destructive",
+      });
+      console.error("Rating QR code generation error:", error);
+    }
+  };
+
   // Handle QR code download
   const handleQrCodeDownload = () => {
     if (qrCodeData?.qrCode && selectedTable) {
@@ -277,7 +298,7 @@ export default function AdminTables() {
       document.body.removeChild(link);
     }
   };
-  
+
   // Handle bulk QR code generation
   const handleBulkQrCodeGeneration = async () => {
     try {
@@ -294,7 +315,7 @@ export default function AdminTables() {
       console.error("Bulk QR code generation error:", error);
     }
   };
-  
+
   // Handle bulk QR code download
   const handleBulkQrCodeDownload = (tableData: TableType & {qrCode: string}) => {
     const link = document.createElement('a');
@@ -313,7 +334,7 @@ export default function AdminTables() {
   return (
     <div className="min-h-screen bg-neutral-50">
       <AdminSidebar />
-      
+
       <div className="pl-64 pt-8 pb-16">
         <div className="container px-6">
           <div className="flex justify-between items-center mb-8">
@@ -354,7 +375,7 @@ export default function AdminTables() {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={addForm.control}
                         name="capacity"
@@ -374,7 +395,7 @@ export default function AdminTables() {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={addForm.control}
                         name="location"
@@ -398,7 +419,7 @@ export default function AdminTables() {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={addForm.control}
                         name="isActive"
@@ -441,7 +462,7 @@ export default function AdminTables() {
               </Dialog>
             </div>
           </div>
-          
+
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
@@ -469,7 +490,7 @@ export default function AdminTables() {
               </CardContent>
             </Card>
           </div>
-          
+
           {/* Tables List */}
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <Table>
@@ -514,14 +535,32 @@ export default function AdminTables() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-8 px-2 text-primary"
-                            onClick={() => handleQrCodeClick(table)}
-                          >
-                            <QrCode className="h-4 w-4" />
-                          </Button>
+                            <div className="relative group">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 px-2 text-primary"
+                                onClick={() => handleQrCodeClick(table)}
+                              >
+                                <QrCode className="h-4 w-4" />
+                              </Button>
+                              <div className="hidden group-hover:block absolute z-50 right-0 top-full mt-1 bg-white rounded-md shadow-lg p-2 text-xs">
+                                Reservation QR
+                              </div>
+                            </div>
+                            <div className="relative group">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 px-2 text-yellow-600"
+                                onClick={() => handleRatingQrCodeClick(table)}
+                              >
+                                <Star className="h-4 w-4" />
+                              </Button>
+                              <div className="hidden group-hover:block absolute z-50 right-0 top-full mt-1 bg-white rounded-md shadow-lg p-2 text-xs">
+                                Rating QR
+                              </div>
+                            </div>
                           <Button
                             size="sm"
                             variant="outline"
@@ -546,7 +585,7 @@ export default function AdminTables() {
               </TableBody>
             </Table>
           </div>
-          
+
           {/* Edit Table Dialog */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
             <DialogContent>
@@ -571,7 +610,7 @@ export default function AdminTables() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={editForm.control}
                     name="capacity"
@@ -591,7 +630,7 @@ export default function AdminTables() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={editForm.control}
                     name="location"
@@ -615,7 +654,7 @@ export default function AdminTables() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={editForm.control}
                     name="isActive"
@@ -656,7 +695,7 @@ export default function AdminTables() {
               </Form>
             </DialogContent>
           </Dialog>
-          
+
           {/* Delete Confirmation Dialog */}
           <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
             <AlertDialogContent>
@@ -684,7 +723,7 @@ export default function AdminTables() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          
+
           {/* QR Code Dialog for Single Table */}
           <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
             <DialogContent className="max-w-md">
@@ -694,7 +733,7 @@ export default function AdminTables() {
                   Scan this QR code to make a reservation for {selectedTable?.name}
                 </DialogDescription>
               </DialogHeader>
-              
+
               {qrCodeData && (
                 <div className="flex flex-col items-center justify-center p-4">
                   <div className="bg-white p-4 rounded-md shadow-md mb-4">
@@ -720,7 +759,7 @@ export default function AdminTables() {
               )}
             </DialogContent>
           </Dialog>
-          
+
           {/* Bulk QR Codes Dialog */}
           <Dialog open={isBulkQrDialogOpen} onOpenChange={setIsBulkQrDialogOpen}>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -730,7 +769,7 @@ export default function AdminTables() {
                   Print these QR codes and place them on each table for easy customer reservations
                 </DialogDescription>
               </DialogHeader>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 py-4">
                 {bulkQrCodes.map((tableData) => (
                   <Card key={tableData.id}>
