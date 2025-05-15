@@ -29,8 +29,8 @@ export default function AdminRatings() {
   });
 
   const averageRating =
-    ratings?.reduce((acc: number, curr: any) => acc + curr.rating, 0) /
-    (ratings?.length || 1);
+    (Array.isArray(ratings) ? ratings.reduce((acc: number, curr: any) => acc + curr.rating, 0) : 0) /
+    (Array.isArray(ratings) ? ratings.length : 1);
 
   return (
     <div className="min-h-screen bg-neutral-50">
