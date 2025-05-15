@@ -3,12 +3,15 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
 import { z } from "zod";
+import { db } from "./db";
 import { 
   insertUserSchema,
   insertMenuItemSchema,
   insertTableSchema,
-  insertReservationSchema
+  insertReservationSchema,
+  ratings
 } from "@shared/schema";
+import { and, desc, gte, lte } from "drizzle-orm";
 import { format, addDays, isBefore, isAfter, parseISO, startOfWeek, endOfWeek } from "date-fns";
 import * as QRCode from "qrcode";
 
