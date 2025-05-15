@@ -37,6 +37,7 @@ function Router() {
           <ProtectedRoute path="/admin/reservations" component={AdminReservations} />
           <ProtectedRoute path="/admin/tables" component={AdminTables} />
           <ProtectedRoute path="/admin/menu" component={AdminMenu} />
+          <ProtectedRoute path="/admin/ratings" component={AdminRatings} />
           <Route component={NotFound} />
         </Switch>
       </main>
