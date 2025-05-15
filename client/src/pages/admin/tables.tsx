@@ -108,8 +108,10 @@ export default function AdminTables() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
+  const [isBulkQrDialogOpen, setIsBulkQrDialogOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState<TableType | null>(null);
   const [qrCodeData, setQrCodeData] = useState<{ qrCode: string, reservationUrl: string } | null>(null);
+  const [bulkQrCodes, setBulkQrCodes] = useState<{table: TableType, qrCode: string, reservationUrl: string}[]>([]);
 
   // Fetch tables
   const { data: tables, isLoading } = useQuery<TableType[]>({
