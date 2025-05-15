@@ -295,7 +295,7 @@ export default function AdminTables() {
     }
   };
   
-  // Handle bulk QR code download
+  // Handle bulk QR code download as ZIP
   const handleBulkQrCodeDownload = (tableData: {table: TableType, qrCode: string}) => {
     const link = document.createElement('a');
     link.href = tableData.qrCode;
@@ -326,226 +326,346 @@ export default function AdminTables() {
               >
                 <QrCode className="mr-2 h-4 w-4" /> Generate All QR Codes
               </Button>
-              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+              <Dialog open={isAddDialogOpen} onOpenChange={(open) => setIsAddDialogOpen(open)}>
                 <DialogTrigger asChild>
                   <Button className="bg-primary hover:bg-primary/80">
                     <Plus className="mr-2 h-4 w-4" /> Add Table
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add New Table</DialogTitle>
-                    <DialogDescription>
-                      Create a new table for reservations.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Form {...addForm}>
-                    <form onSubmit={addForm.handleSubmit(onAddSubmit)} className="space-y-4 py-4">
-                      <FormField
-                        control={addForm.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Table Name/Number</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Table 1" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={addForm.control}
-                        name="capacity"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Capacity</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                min={1} 
-                                max={20} 
-                                {...field}
-                                onChange={e => field.onChange(parseInt(e.target.value))}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={addForm.control}
-                        name="location"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Location</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select location" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Main">Main Area</SelectItem>
-                                <SelectItem value="Outdoor">Outdoor/Patio</SelectItem>
-                                <SelectItem value="Private">Private Room</SelectItem>
-                                <SelectItem value="Bar">Bar Area</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={addForm.control}
-                        name="isActive"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                            <div className="space-y-0.5">
-                              <FormLabel>Available for booking</FormLabel>
-                            </div>
-                            <FormControl>
-                              <input
-                                type="checkbox"
-                                checked={field.value}
-                                onChange={field.onChange}
-                                className="accent-primary h-4 w-4"
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-
-                      <DialogFooter>
-                        <Button 
-                          type="submit" 
-                          className="bg-primary hover:bg-primary/80"
-                          disabled={createTableMutation.isPending}
-                        >
-                          {createTableMutation.isPending ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Creating...
-                            </>
-                          ) : (
-                            "Create Table"
-                          )}
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
               </Dialog>
-            </div>
+              <Dialog open={isAddDialogOpen} onOpenChange={(open) => setIsAddDialogOpen(open)}>
+                <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New Table</DialogTitle>
+                  <DialogDescription>
+                    Create a new table for reservations.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...addForm}>
+                  <form onSubmit={addForm.handleSubmit(onAddSubmit)} className="space-y-4 py-4">
+                    <FormField
+                      control={addForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Table Name/Number</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Table 1" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={addForm.control}
+                      name="capacity"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Capacity</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              min={1} 
+                              max={20} 
+                              {...field}
+                              onChange={e => field.onChange(parseInt(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={addForm.control}
+                      name="location"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Location</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select location" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Main">Main Area</SelectItem>
+                              <SelectItem value="Outdoor">Outdoor/Patio</SelectItem>
+                              <SelectItem value="Private">Private Room</SelectItem>
+                              <SelectItem value="Bar">Bar Area</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={addForm.control}
+                      name="isActive"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                          <div className="space-y-0.5">
+                            <FormLabel>Available for booking</FormLabel>
+                          </div>
+                          <FormControl>
+                            <input
+                              type="checkbox"
+                              checked={field.value}
+                              onChange={field.onChange}
+                              className="accent-primary h-4 w-4"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <DialogFooter>
+                      <Button 
+                        type="submit" 
+                        className="bg-primary hover:bg-primary/80"
+                        disabled={createTableMutation.isPending}
+                      >
+                        {createTableMutation.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Creating...
+                          </>
+                        ) : (
+                          "Create Table"
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+            
+            {/* QR Code Dialog for Single Table */}
+            <Dialog open={isQrDialogOpen} onOpenChange={(open) => setIsQrDialogOpen(open)}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Table QR Code</DialogTitle>
+                  <DialogDescription>
+                    Scan this QR code to make a reservation for {selectedTable?.name}
+                  </DialogDescription>
+                </DialogHeader>
+                
+                {qrCodeData && (
+                  <div className="flex flex-col items-center justify-center p-4">
+                    <div className="bg-white p-4 rounded-md shadow-md mb-4">
+                      <img 
+                        src={qrCodeData.qrCode} 
+                        alt={`QR code for ${selectedTable?.name}`} 
+                        className="w-64 h-64"
+                      />
+                    </div>
+                    <p className="text-sm text-center text-muted-foreground mb-4">
+                      Direct reservation URL:<br />
+                      <span className="text-primary break-all">{qrCodeData.reservationUrl}</span>
+                    </p>
+                    <Button 
+                      onClick={handleQrCodeDownload}
+                      className="w-full"
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Download QR Code
+                    </Button>
+                    <p className="text-xs text-center text-muted-foreground mt-2">
+                      Print this code and place it on your table to allow customers to make reservations.
+                    </p>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+            
+            {/* Bulk QR Code Dialog */}
+            <Dialog open={isBulkQrDialogOpen} onOpenChange={(open) => setIsBulkQrDialogOpen(open)}>
+              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>All Table QR Codes</DialogTitle>
+                  <DialogDescription>
+                    Download and print QR codes for all tables to allow direct reservations
+                  </DialogDescription>
+                </DialogHeader>
+                
+                {bulkQrCodes.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+                    {bulkQrCodes.map((tableData) => (
+                      <Card key={tableData.table.id} className="overflow-hidden">
+                        <CardHeader className="p-4 pb-2">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h3 className="text-lg font-medium">{tableData.table.name}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                Capacity: {tableData.table.capacity} | Location: {tableData.table.location}
+                              </p>
+                            </div>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleBulkQrCodeDownload(tableData)}
+                            >
+                              <Download className="h-4 w-4 mr-1" /> Download
+                            </Button>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="p-4 pt-2 flex justify-center">
+                          <div className="bg-white p-3 rounded-md shadow-sm">
+                            <img 
+                              src={tableData.qrCode} 
+                              alt={`QR code for ${tableData.table.name}`} 
+                              className="w-48 h-48"
+                            />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-8 text-center">
+                    <p className="text-muted-foreground">Loading QR codes...</p>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
           
-          {/* Stats Cards */}
+          {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Total Tables</CardTitle>
+                <CardTitle className="text-lg font-medium">Total Tables</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">{totalTables}</div>
               </CardContent>
             </Card>
+            
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Total Capacity</CardTitle>
+                <CardTitle className="text-lg font-medium">Total Seating Capacity</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{totalSeats} seats</div>
+                <div className="text-3xl font-bold">{totalSeats}</div>
               </CardContent>
             </Card>
+            
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Active Tables</CardTitle>
+                <CardTitle className="text-lg font-medium">Active Tables</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{activeTables} of {totalTables}</div>
+                <div className="text-3xl font-bold">{activeTables}</div>
               </CardContent>
             </Card>
           </div>
           
           {/* Tables List */}
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Capacity</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <div className="bg-white shadow-sm rounded-md overflow-hidden">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                      <span className="mt-2 block text-sm text-muted-foreground">Loading tables...</span>
-                    </TableCell>
+                    <TableHead>Name/Number</TableHead>
+                    <TableHead>Capacity</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ) : tables?.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      <p className="text-muted-foreground mb-2">No tables found</p>
-                      <DialogTrigger asChild>
-                        <Button size="sm" onClick={() => setIsAddDialogOpen(true)}>
-                          <Plus className="mr-2 h-4 w-4" /> Add your first table
-                        </Button>
-                      </DialogTrigger>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  tables?.map((table) => (
-                    <TableRow key={table.id}>
-                      <TableCell className="font-medium">{table.name}</TableCell>
-                      <TableCell>{table.capacity} {table.capacity === 1 ? 'person' : 'people'}</TableCell>
-                      <TableCell>{table.location}</TableCell>
-                      <TableCell>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${table.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                          {table.isActive ? 'Active' : 'Inactive'}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-8 px-2 text-primary"
-                            onClick={() => handleQrCodeClick(table)}
-                          >
-                            <QrCode className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-8 px-2"
-                            onClick={() => handleEditClick(table)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-8 px-2 text-destructive"
-                            onClick={() => handleDeleteClick(table)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                </TableHeader>
+                <TableBody>
+                  {tables?.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8 text-neutral-500">
+                        No tables found. Create your first table to get started.
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                  ) : (
+                    tables?.map((table) => (
+                      <TableRow key={table.id}>
+                        <TableCell className="font-medium">{table.name}</TableCell>
+                        <TableCell>{table.capacity} {table.capacity === 1 ? 'person' : 'people'}</TableCell>
+                        <TableCell>{table.location}</TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            table.isActive 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-neutral-100 text-neutral-800'
+                          }`}>
+                            {table.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => handleQrCodeClick(table)}
+                              title="Generate QR code"
+                            >
+                              <QrCode className="h-4 w-4 text-primary" />
+                            </Button>
+                            
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => handleEditClick(table)}
+                              title="Edit table"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            
+                            <AlertDialog open={deleteDialogOpen && selectedTable?.id === table.id} onOpenChange={(open) => setDeleteDialogOpen(open)}>
+                              <AlertDialogTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => handleDeleteClick(table)}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the table
+                                    and may affect existing reservations.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction 
+                                    onClick={confirmDelete}
+                                    className="bg-destructive hover:bg-destructive/90"
+                                  >
+                                    {deleteTableMutation.isPending ? (
+                                      <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Deleting...
+                                      </>
+                                    ) : (
+                                      "Delete"
+                                    )}
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          )}
           
           {/* Edit Table Dialog */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -553,7 +673,7 @@ export default function AdminTables() {
               <DialogHeader>
                 <DialogTitle>Edit Table</DialogTitle>
                 <DialogDescription>
-                  Update table information.
+                  Update the details for this table.
                 </DialogDescription>
               </DialogHeader>
               <Form {...editForm}>
@@ -654,109 +774,6 @@ export default function AdminTables() {
                   </DialogFooter>
                 </form>
               </Form>
-            </DialogContent>
-          </Dialog>
-          
-          {/* Delete Confirmation Dialog */}
-          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently delete the table "{selectedTable?.name}". This action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction 
-                  onClick={confirmDelete}
-                  className="bg-destructive hover:bg-destructive/90"
-                >
-                  {deleteTableMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Deleting...
-                    </>
-                  ) : (
-                    "Delete"
-                  )}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          
-          {/* QR Code Dialog for Single Table */}
-          <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Table QR Code</DialogTitle>
-                <DialogDescription>
-                  Scan this QR code to make a reservation for {selectedTable?.name}
-                </DialogDescription>
-              </DialogHeader>
-              
-              {qrCodeData && (
-                <div className="flex flex-col items-center justify-center p-4">
-                  <div className="bg-white p-4 rounded-md shadow-md mb-4">
-                    <img 
-                      src={qrCodeData.qrCode} 
-                      alt={`QR code for ${selectedTable?.name}`} 
-                      className="w-64 h-64"
-                    />
-                  </div>
-                  <p className="text-sm text-center text-muted-foreground mb-4">
-                    Direct reservation URL:<br />
-                    <a href={qrCodeData.reservationUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
-                      {qrCodeData.reservationUrl}
-                    </a>
-                  </p>
-                  <Button
-                    onClick={handleQrCodeDownload}
-                    className="w-full"
-                  >
-                    <Download className="mr-2 h-4 w-4" /> Download QR Code
-                  </Button>
-                </div>
-              )}
-            </DialogContent>
-          </Dialog>
-          
-          {/* Bulk QR Codes Dialog */}
-          <Dialog open={isBulkQrDialogOpen} onOpenChange={setIsBulkQrDialogOpen}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>QR Codes for All Tables</DialogTitle>
-                <DialogDescription>
-                  Print these QR codes and place them on each table for easy customer reservations
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 py-4">
-                {bulkQrCodes.map((tableData) => (
-                  <Card key={tableData.table.id}>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-base">{tableData.table.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col items-center">
-                      <div className="bg-white p-3 rounded-md shadow-sm">
-                        <img 
-                          src={tableData.qrCode} 
-                          alt={`QR code for ${tableData.table.name}`} 
-                          className="w-48 h-48"
-                        />
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleBulkQrCodeDownload(tableData)}
-                        className="mt-3 w-full"
-                      >
-                        <Download className="mr-2 h-3 w-3" /> Download
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
             </DialogContent>
           </Dialog>
         </div>
