@@ -11,6 +11,7 @@ import MenuPage from "@/pages/menu-page";
 import ReservationPage from "@/pages/reservation-page";
 import MyReservationsPage from "@/pages/my-reservations-page";
 import AuthPage from "@/pages/auth-page";
+import RatingPage from "@/pages/rating-page";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminReservations from "@/pages/admin/reservations";
 import AdminTables from "@/pages/admin/tables";
