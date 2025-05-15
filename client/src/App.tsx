@@ -30,7 +30,7 @@ function Router() {
           <Route path="/" component={HomePage} />
           <Route path="/menu" component={MenuPage} />
           <Route path="/reservation" component={ReservationPage} />
-          <Route path="/rating" component={RatingPage} />
+          <Route path="/rating/:table?" component={RatingPage} />
           <ProtectedRoute path="/my-reservations" component={MyReservationsPage} />
           <Route path="/auth" component={AuthPage} />
           <ProtectedRoute path="/admin" component={AdminDashboard} />
