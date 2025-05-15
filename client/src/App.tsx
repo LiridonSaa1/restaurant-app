@@ -16,6 +16,7 @@ import AdminDashboard from "@/pages/admin/dashboard";
 import AdminReservations from "@/pages/admin/reservations";
 import AdminTables from "@/pages/admin/tables";
 import AdminMenu from "@/pages/admin/menu";
+import AdminRatings from "@/pages/admin/ratings";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "./lib/protected-route";
 import Header from "./components/Header";
