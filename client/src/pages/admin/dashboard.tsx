@@ -10,7 +10,8 @@ import {
   ChevronRight,
   CheckCircle2,
   Clock,
-  CalendarRange
+  CalendarRange,
+  Star
 } from "lucide-react";
 import { Reservation, Table, MenuItem } from "@shared/schema";
 import { format, isToday, isAfter, startOfDay, endOfDay, addDays } from "date-fns";
