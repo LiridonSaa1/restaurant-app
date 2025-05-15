@@ -10,6 +10,7 @@ import {
   insertReservationSchema
 } from "@shared/schema";
 import { format, addDays, isBefore, isAfter, parseISO } from "date-fns";
+import * as QRCode from "qrcode";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
@@ -134,6 +135,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const id = parseInt(req.params.id);
     await storage.deleteTable(id);
     res.status(204).end();
+  });
+  
+  // QR Code Generation for Tables
+  app.get("/api/tables/:id/qrcode", isAdmin, async (req, res) => {
+    try {
+      const tableId = parseInt(req.params.id);
+      const table = await storage.getTable(tableId);
+      
+      if (!table) {
+        return res.status(404).send("Table not found");
+      }
+      
+      // Create reservation URL for this table
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const reservationUrl = `${baseUrl}/reservation?table=${tableId}`;
+      
+      // Generate QR code
+      const qrCode = await QRCode.toDataURL(reservationUrl, {
+        errorCorrectionLevel: 'H',
+        margin: 1,
+        scale: 8
+      });
+      
+      res.json({
+        table,
+        qrCode,
+        reservationUrl
+      });
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      res.status(500).send('Error generating QR code');
+    }
+  });
+  
+  // Generate QR codes for all tables
+  app.get("/api/tables/qrcodes/all", isAdmin, async (req, res) => {
+    try {
+      const tables = await storage.getAllTables();
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      
+      const tablesWithQRCodes = await Promise.all(tables.map(async (table) => {
+        const reservationUrl = `${baseUrl}/reservation?table=${table.id}`;
+        const qrCode = await QRCode.toDataURL(reservationUrl, {
+          errorCorrectionLevel: 'H',
+          margin: 1,
+          scale: 8
+        });
+        
+        return {
+          ...table,
+          qrCode,
+          reservationUrl
+        };
+      }));
+      
+      res.json(tablesWithQRCodes);
+    } catch (error) {
+      console.error('Error generating QR codes:', error);
+      res.status(500).send('Error generating QR codes');
+    }
   });
 
   // Reservations Routes
