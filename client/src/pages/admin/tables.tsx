@@ -111,7 +111,7 @@ export default function AdminTables() {
   const [isBulkQrDialogOpen, setIsBulkQrDialogOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState<TableType | null>(null);
   const [qrCodeData, setQrCodeData] = useState<{ qrCode: string, reservationUrl: string } | null>(null);
-  const [bulkQrCodes, setBulkQrCodes] = useState<{table: TableType, qrCode: string, reservationUrl: string}[]>([]);
+  const [bulkQrCodes, setBulkQrCodes] = useState<(TableType & {qrCode: string, reservationUrl: string})[]>([]);
 
   // Fetch tables
   const { data: tables, isLoading } = useQuery<TableType[]>({
@@ -296,10 +296,10 @@ export default function AdminTables() {
   };
   
   // Handle bulk QR code download
-  const handleBulkQrCodeDownload = (tableData: {table: TableType, qrCode: string}) => {
+  const handleBulkQrCodeDownload = (tableData: TableType & {qrCode: string}) => {
     const link = document.createElement('a');
     link.href = tableData.qrCode;
-    link.download = `table-qr-${tableData.table.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+    link.download = `table-qr-${tableData.name.replace(/\s+/g, '-').toLowerCase()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -733,15 +733,15 @@ export default function AdminTables() {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 py-4">
                 {bulkQrCodes.map((tableData) => (
-                  <Card key={tableData.table.id}>
+                  <Card key={tableData.id}>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-base">{tableData.table.name}</CardTitle>
+                      <CardTitle className="text-base">{tableData.name}</CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col items-center">
                       <div className="bg-white p-3 rounded-md shadow-sm">
                         <img 
                           src={tableData.qrCode} 
-                          alt={`QR code for ${tableData.table.name}`} 
+                          alt={`QR code for ${tableData.name}`} 
                           className="w-48 h-48"
                         />
                       </div>
