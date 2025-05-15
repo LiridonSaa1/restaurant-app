@@ -1,14 +1,13 @@
-
 import { useEffect, useState } from "react";
-import { useSearch } from "wouter/use-location";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export default function RatingPage() {
-  const search = useSearch();
-  const params = new URLSearchParams(search);
+  const [location] = useLocation();
+  const params = new URLSearchParams(location.split("?")[1] || "");
   const tableId = params.get("table");
   const [rating, setRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
@@ -32,7 +31,7 @@ export default function RatingPage() {
       });
       return;
     }
-    
+
     // Here you would typically send the rating to your backend
     console.log(`Submitted rating ${rating} for table ${tableId}`);
     setSubmitted(true);
@@ -46,7 +45,9 @@ export default function RatingPage() {
     <div className="container mx-auto px-4 py-8">
       <Card className="max-w-md mx-auto">
         <CardContent className="pt-6">
-          <h1 className="text-2xl font-bold mb-4 text-center">Rate Your Experience</h1>
+          <h1 className="text-2xl font-bold mb-4 text-center">
+            Rate Your Experience
+          </h1>
           {!submitted ? (
             <>
               <div className="flex justify-center gap-2 mb-6">
@@ -64,17 +65,16 @@ export default function RatingPage() {
                   />
                 ))}
               </div>
-              <Button 
-                className="w-full" 
-                onClick={handleSubmit}
-              >
+              <Button className="w-full" onClick={handleSubmit}>
                 Submit Rating
               </Button>
             </>
           ) : (
             <div className="text-center py-4">
               <p className="text-xl mb-2">Thank you for your feedback!</p>
-              <p className="text-neutral-600">Your rating helps us improve our service.</p>
+              <p className="text-neutral-600">
+                Your rating helps us improve our service.
+              </p>
             </div>
           )}
         </CardContent>
