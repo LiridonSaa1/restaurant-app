@@ -288,7 +288,7 @@ export default function AdminMenu() {
   // Render dietary tags
   const renderDietaryTags = (dietary: string[] | undefined) => {
     if (!dietary || dietary.length === 0) return null;
-    
+
     return (
       <div className="flex flex-wrap gap-1 mt-1">
         {dietary.map(tag => (
@@ -303,7 +303,7 @@ export default function AdminMenu() {
   return (
     <div className="min-h-screen bg-neutral-50">
       <AdminSidebar />
-      
+
       <div className="pl-64 pt-8 pb-16">
         <div className="container px-6">
           <div className="flex justify-between items-center mb-8">
@@ -337,7 +337,7 @@ export default function AdminMenu() {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={addForm.control}
                         name="price"
@@ -351,7 +351,6 @@ export default function AdminMenu() {
                                 step={0.01}
                                 placeholder="19.99"
                                 {...field}
-                                onChange={e => field.onChange(parseFloat(e.target.value))}
                               />
                             </FormControl>
                             <FormMessage />
@@ -359,7 +358,7 @@ export default function AdminMenu() {
                         )}
                       />
                     </div>
-                    
+
                     <FormField
                       control={addForm.control}
                       name="description"
@@ -377,7 +376,7 @@ export default function AdminMenu() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={addForm.control}
@@ -403,7 +402,7 @@ export default function AdminMenu() {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={addForm.control}
                         name="image"
@@ -426,7 +425,7 @@ export default function AdminMenu() {
                         )}
                       />
                     </div>
-                    
+
                     <FormField
                       control={addForm.control}
                       name="dietary"
@@ -463,7 +462,7 @@ export default function AdminMenu() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={addForm.control}
@@ -484,7 +483,7 @@ export default function AdminMenu() {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={addForm.control}
                         name="featuredItem"
@@ -527,7 +526,7 @@ export default function AdminMenu() {
               </DialogContent>
             </Dialog>
           </div>
-          
+
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
@@ -538,7 +537,7 @@ export default function AdminMenu() {
                 <div className="text-3xl font-bold">{totalItems}</div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-medium">Available Items</CardTitle>
@@ -547,7 +546,7 @@ export default function AdminMenu() {
                 <div className="text-3xl font-bold">{availableItems}</div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-medium">Featured Items</CardTitle>
@@ -557,7 +556,7 @@ export default function AdminMenu() {
               </CardContent>
             </Card>
           </div>
-          
+
           {/* Category Tabs */}
           <Tabs 
             defaultValue={activeCategory} 
@@ -578,7 +577,7 @@ export default function AdminMenu() {
               </TabsList>
             </div>
           </Tabs>
-          
+
           {/* Menu Items List */}
           {isLoading ? (
             <div className="flex items-center justify-center h-64">
@@ -651,7 +650,7 @@ export default function AdminMenu() {
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
-                            
+
                             <AlertDialog open={deleteDialogOpen && selectedMenuItem?.id === item.id} onOpenChange={setDeleteDialogOpen}>
                               <AlertDialogTrigger asChild>
                                 <Button 
@@ -697,7 +696,7 @@ export default function AdminMenu() {
               </Table>
             </div>
           )}
-          
+
           {/* Edit Menu Item Dialog */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
             <DialogContent className="max-w-2xl">
@@ -723,7 +722,7 @@ export default function AdminMenu() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={editForm.control}
                       name="price"
@@ -736,7 +735,6 @@ export default function AdminMenu() {
                               min={0.01} 
                               step={0.01}
                               {...field}
-                              onChange={e => field.onChange(parseFloat(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -744,7 +742,7 @@ export default function AdminMenu() {
                       )}
                     />
                   </div>
-                  
+
                   <FormField
                     control={editForm.control}
                     name="description"
@@ -761,7 +759,7 @@ export default function AdminMenu() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={editForm.control}
@@ -787,7 +785,7 @@ export default function AdminMenu() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={editForm.control}
                       name="image"
@@ -807,7 +805,7 @@ export default function AdminMenu() {
                       )}
                     />
                   </div>
-                  
+
                   <FormField
                     control={editForm.control}
                     name="dietary"
@@ -844,7 +842,7 @@ export default function AdminMenu() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={editForm.control}
@@ -865,7 +863,7 @@ export default function AdminMenu() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={editForm.control}
                       name="featuredItem"

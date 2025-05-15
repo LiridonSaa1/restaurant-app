@@ -41,7 +41,7 @@ export const menuItems = pgTable("menu_items", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description").notNull(),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull().$type<number>(),
   category: text("category").notNull(),
   image: text("image"),
   dietary: text("dietary").array(),
