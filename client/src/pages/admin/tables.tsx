@@ -242,6 +242,39 @@ export default function AdminTables() {
       deleteTableMutation.mutate(selectedTable.id);
     }
   };
+  
+  // Handle QR code generation
+  const handleQrCodeClick = async (table: TableType) => {
+    try {
+      setSelectedTable(table);
+      const res = await apiRequest("GET", `/api/tables/${table.id}/qrcode`);
+      const data = await res.json();
+      setQrCodeData({
+        qrCode: data.qrCode,
+        reservationUrl: data.reservationUrl
+      });
+      setIsQrDialogOpen(true);
+    } catch (error) {
+      toast({
+        title: "Error generating QR code",
+        description: "Could not generate QR code for this table.",
+        variant: "destructive",
+      });
+      console.error("QR code generation error:", error);
+    }
+  };
+  
+  // Handle QR code download
+  const handleQrCodeDownload = () => {
+    if (qrCodeData?.qrCode && selectedTable) {
+      const link = document.createElement('a');
+      link.href = qrCodeData.qrCode;
+      link.download = `table-qr-${selectedTable.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
 
   // Compute summary stats
   const totalTables = tables?.length || 0;
@@ -256,7 +289,7 @@ export default function AdminTables() {
         <div className="container px-6">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-heading font-bold">Tables Management</h1>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <Dialog open={isAddDialogOpen} onOpenChange={(open) => setIsAddDialogOpen(open)}>
               <DialogTrigger asChild>
                 <Button className="bg-primary hover:bg-primary/80">
                   <Plus className="mr-2 h-4 w-4" /> Add Table
@@ -369,6 +402,44 @@ export default function AdminTables() {
                 </Form>
               </DialogContent>
             </Dialog>
+            
+            {/* QR Code Dialog */}
+            <Dialog open={isQrDialogOpen} onOpenChange={(open) => setIsQrDialogOpen(open)}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Table QR Code</DialogTitle>
+                  <DialogDescription>
+                    Scan this QR code to make a reservation for {selectedTable?.name}
+                  </DialogDescription>
+                </DialogHeader>
+                
+                {qrCodeData && (
+                  <div className="flex flex-col items-center justify-center p-4">
+                    <div className="bg-white p-4 rounded-md shadow-md mb-4">
+                      <img 
+                        src={qrCodeData.qrCode} 
+                        alt={`QR code for ${selectedTable?.name}`} 
+                        className="w-64 h-64"
+                      />
+                    </div>
+                    <p className="text-sm text-center text-muted-foreground mb-4">
+                      Direct reservation URL:<br />
+                      <span className="text-primary break-all">{qrCodeData.reservationUrl}</span>
+                    </p>
+                    <Button 
+                      onClick={handleQrCodeDownload}
+                      className="w-full"
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Download QR Code
+                    </Button>
+                    <p className="text-xs text-center text-muted-foreground mt-2">
+                      Print this code and place it on your table to allow customers to make reservations.
+                    </p>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
           
           {/* Summary Cards */}
@@ -445,12 +516,22 @@ export default function AdminTables() {
                             <Button 
                               variant="ghost" 
                               size="icon"
+                              onClick={() => handleQrCodeClick(table)}
+                              title="Generate QR code"
+                            >
+                              <QrCode className="h-4 w-4 text-primary" />
+                            </Button>
+                            
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
                               onClick={() => handleEditClick(table)}
+                              title="Edit table"
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
                             
-                            <AlertDialog open={deleteDialogOpen && selectedTable?.id === table.id} onOpenChange={setDeleteDialogOpen}>
+                            <AlertDialog open={deleteDialogOpen && selectedTable?.id === table.id} onOpenChange={(open) => setDeleteDialogOpen(open)}>
                               <AlertDialogTrigger asChild>
                                 <Button 
                                   variant="ghost" 
